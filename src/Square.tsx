@@ -2,8 +2,9 @@ import { useState } from 'react'
 import Piece from './Piece'
 import { Colour, PieceType } from './Constants';
 import { useDrop } from 'react-dnd';
+import React from 'react';
 
-function getColour(pieceType) {
+function getColour(pieceType: PieceType) {
   if (pieceType >= 1 && pieceType <= 6) {
     return Colour.White;
   }
@@ -14,7 +15,16 @@ function getColour(pieceType) {
   throw new Error('Piece type of 0 does not have a colour');
 }
 
-function Square(props) {
+export interface SquareProps {
+  row: number;
+  col: number;
+  colour: Colour;
+  piece: PieceType;
+  currentTurn: Colour;
+  onMove: (startRow: number, startCol: number, endRow: number, endCol: number) => void;
+}
+
+function Square(props: SquareProps) {
 
     const [test, setTest] = useState(false);
     
@@ -24,7 +34,7 @@ function Square(props) {
       hover: () => {
         setTest(true);
       },
-      drop(item, monitor) {
+      drop(item: any, monitor) {
           props.onMove(item.startRow, item.startCol, props.row, props.col);
         },
       collect: (monitor) => ({
@@ -38,25 +48,25 @@ function Square(props) {
         console.log("props.piece" + props.piece);
         console.log("ITEM:");
         console.log(item);
-        console.log("Is there no piece on the square we're dragging to? %s", props.piece === PieceType.None);
+        console.log("Is there no piece on the square we're dragging to? %s", props.piece.valueOf() === PieceType.None);
         
         // Item that we're dragging must match the current turn.
         // And if we're capturing a piece, it must be the opposite colour.
         return item.colour === props.currentTurn
-          && (props.piece === PieceType.None
+          && (props.piece.valueOf() === PieceType.None
               || getColour(props.piece) !== item.colour)
       }
     }), [test, props.currentTurn]);
   
-    if (props.piece === undefined || props.piece === PieceType.None) {
+    if (props.piece === undefined || props.piece.valueOf() === PieceType.None) {
       return (
-        <span ref={drop} className={props.colour === Colour.White ? "light-square" : "dark-square"} />
+        <span ref={drop} className={props.colour.valueOf() === Colour.White ? "light-square" : "dark-square"} />
       );
     }
   
     return (
       <>
-        <span ref={drop} className={props.colour === Colour.White ? "light-square" : "dark-square"} >
+        <span ref={drop} className={props.colour.valueOf() === Colour.White ? "light-square" : "dark-square"} >
           <Piece row={props.row} col={props.col} pieceType={props.piece} />
         </span>
       </>

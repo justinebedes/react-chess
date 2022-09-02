@@ -1,13 +1,14 @@
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { BoardSize, PieceType, Colour } from './Constants';
 import Square from './Square';
 
 function Board() { 
-    const [board, setBoard] = useState([]);
+    const [board, setBoard] = useState<number[][]>([]);
     const [currentTurn, setCurrentTurn] = useState(Colour.White);
     
     useEffect(() => {
-      var startingPosition = new Array(BoardSize);
+      let startingPosition: number[][] = new Array(BoardSize);
       for (var row = 0; row < startingPosition.length; row++)
       {
         startingPosition[row] = Array(BoardSize).fill(PieceType.None);
@@ -40,7 +41,7 @@ function Board() {
       setBoard(startingPosition);
     }, []);
     
-    const handleMove = (startRow, startCol, endRow, endCol) => {
+    const handleMove = (startRow: number, startCol: number, endRow: number, endCol: number) => {
         console.log('handleMove called: ' + startRow + ',' + startCol + ' to ' + endRow + ',' + endCol);
         console.log('Length of board: ' + board.length);
 
@@ -64,21 +65,21 @@ function Board() {
         // setBoard(updatedBoard);
     }
 
-    const renderSquare = (row, col, colour, piece, turn) => {
+    const renderSquare = (row: number, col: number, colour: Colour, piece: PieceType, turn: Colour) => {
       console.log("Current turn in renderSquare: " + turn)
       return <Square key={row + "," + col} row={row} col={col} colour={colour} piece={piece} 
                      currentTurn={turn} onMove={handleMove} />;
     }
 
-    const renderRow = (row) => {
-        var squares = [];
+    const renderRow = (row: number) => {
+        let squares: React.ReactElement[] = [];
 
         for (var col = 0; col < BoardSize; col++) {
-          var colour;
+          let colour = Colour.White;
           if (col % 2 === 0) {
-            colour = row % 2 === 0 ? Colour.White : Colour.Black
+            colour = row % 2 === 0 ? Colour.White : Colour.Black;
           } else {
-            colour = row % 2 === 0 ? Colour.Black : Colour.White
+            colour = row % 2 === 0 ? Colour.Black : Colour.White;
           }
 
           squares.push(renderSquare(row, col, colour, board && board[row] && board[row][col], currentTurn));
@@ -94,7 +95,7 @@ function Board() {
     console.log("Getting currentTurn: " + currentTurn);
     const status = 'Next player: ' + currentTurn;
 
-    var rows = [];
+    let rows: React.ReactElement[] = [];
     for (var row = 0; row < BoardSize; row++) {
         rows.push(renderRow(row))
     }

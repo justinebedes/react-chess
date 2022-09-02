@@ -1,3 +1,4 @@
+import React from 'react';
 import { Colour, PieceType } from './Constants';
 import { useDrag } from 'react-dnd';
 
@@ -15,8 +16,13 @@ import { ReactComponent as BlackRook } from './Images/BlackRook.svg';
 import { ReactComponent as BlackQueen } from './Images/BlackQueen.svg';
 import { ReactComponent as BlackKing } from './Images/BlackKing.svg';
 
+export interface PieceProps {
+    row: number,
+    col: number,
+    pieceType: PieceType
+}
 
-function Piece(props) {
+function Piece(props: PieceProps) {
     const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
         type: 'PIECE',
         item: {
