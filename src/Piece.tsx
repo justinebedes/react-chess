@@ -3,14 +3,14 @@ import { Colour, PieceType } from './Constants';
 import { useDrag } from 'react-dnd';
 
 import { ReactComponent as WhitePawn } from './Images/WhitePawn.svg';
-import { ReactComponent as WhiteNight } from './Images/WhiteNight.svg';
+import { ReactComponent as WhiteKnight } from './Images/WhiteKnight.svg';
 import { ReactComponent as WhiteBishop } from './Images/WhiteBishop.svg';
 import { ReactComponent as WhiteRook } from './Images/WhiteRook.svg';
 import { ReactComponent as WhiteQueen } from './Images/WhiteQueen.svg';
 import { ReactComponent as WhiteKing } from './Images/WhiteKing.svg';
 
 import { ReactComponent as BlackPawn } from './Images/BlackPawn.svg';
-import { ReactComponent as BlackNight } from './Images/BlackNight.svg';
+import { ReactComponent as BlackKnight } from './Images/BlackKnight.svg';
 import { ReactComponent as BlackBishop } from './Images/BlackBishop.svg';
 import { ReactComponent as BlackRook } from './Images/BlackRook.svg';
 import { ReactComponent as BlackQueen } from './Images/BlackQueen.svg';
@@ -48,8 +48,8 @@ function Piece(props: PieceProps) {
             // ) : (
 
             return <div ref={drag}><WhitePawn /></div>;
-        case PieceType.WhiteNight:
-            return <div ref={drag}><WhiteNight /></div>;
+        case PieceType.WhiteKnight:
+            return <div ref={drag}><WhiteKnight /></div>;
         case PieceType.WhiteBishop:
             return <div ref={drag}><WhiteBishop /></div>;
         case PieceType.WhiteRook:
@@ -60,8 +60,8 @@ function Piece(props: PieceProps) {
             return <div ref={drag}><WhiteKing /></div>;
         case PieceType.BlackPawn:
             return <div ref={drag}><BlackPawn /></div>;
-        case PieceType.BlackNight:
-            return <div ref={drag}><BlackNight /></div>;
+        case PieceType.BlackKnight:
+            return <div ref={drag}><BlackKnight /></div>;
         case PieceType.BlackBishop:
             return <div ref={drag}><BlackBishop /></div>;
         case PieceType.BlackRook:

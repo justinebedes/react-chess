@@ -2,7 +2,6 @@ import { useState } from 'react'
 import Piece from './Piece'
 import { Colour, PieceType } from './Constants';
 import { useDrop } from 'react-dnd';
-import React from 'react';
 
 function getColour(pieceType: PieceType) {
   if (pieceType >= 1 && pieceType <= 6) {
@@ -21,7 +20,7 @@ export interface SquareProps {
   colour: Colour;
   piece: PieceType;
   currentTurn: Colour;
-  onMove: (startRow: number, startCol: number, endRow: number, endCol: number) => void;
+  onMove: (startRow: number, startCol: number, endRow: number, endCol: number, piece: PieceType) => void;
 }
 
 function Square(props: SquareProps) {
@@ -35,7 +34,7 @@ function Square(props: SquareProps) {
         setTest(true);
       },
       drop(item: any, monitor) {
-          props.onMove(item.startRow, item.startCol, props.row, props.col);
+          props.onMove(item.startRow, item.startCol, props.row, props.col, item.movedPiece);
         },
       collect: (monitor) => ({
           isOver: monitor.isOver(),
@@ -51,10 +50,30 @@ function Square(props: SquareProps) {
         console.log("Is there no piece on the square we're dragging to? %s", props.piece.valueOf() === PieceType.None);
         
         // Item that we're dragging must match the current turn.
-        // And if we're capturing a piece, it must be the opposite colour.
-        return item.colour === props.currentTurn
-          && (props.piece.valueOf() === PieceType.None
-              || getColour(props.piece) !== item.colour)
+        if (item.colour !== props.currentTurn) {
+          return false;
+        }
+
+        // If we're capturing a piece, it must be the opposite colour.
+        if (props.piece.valueOf() !== PieceType.None
+              && getColour(props.piece) === item.colour)
+        {
+          return false;
+        }
+
+        switch (item.movedPiece) {
+          case PieceType.WhitePawn:
+            return isWhitePawnMoveValid(item.startRow, item.startCol, props.row, props.col, props.piece.valueOf())
+
+          case PieceType.BlackPawn:
+            return isBlackPawnMoveValid(item.startRow, item.startCol, props.row, props.col, props.piece.valueOf())
+
+          case PieceType.WhiteKnight:
+          case PieceType.BlackKnight:
+            return isKnightMoveValid(item.startRow, item.startCol, props.row, props.col)
+        }
+
+        return true;
       }
     }), [test, props.currentTurn]);
   
@@ -74,3 +93,42 @@ function Square(props: SquareProps) {
   };
 
   export default Square;
+
+function isWhitePawnMoveValid(startRow: number, startCol: number, endRow: number, endCol: number, capturedPiece: PieceType): boolean {
+  console.log("Moving a white pawn");
+  // TODO: What if we're moving two squares but there's a piece in the way? Need access to board array to check this.
+
+  // Can only capture diagonally.
+  if (capturedPiece !== PieceType.None) {
+    return endRow === startRow - 1 && (Math.abs(startCol - endCol) === 1);
+  }
+  
+  // Can move one or two squares on first move. Otherwise only one square.
+  if (startRow === 6) {
+    return (endRow === 4 || endRow === 5) && startCol === endCol;
+  }
+  return endRow === startRow - 1 && startCol === endCol;
+}
+
+function isBlackPawnMoveValid(startRow: number, startCol: number, endRow: number, endCol: number, capturedPiece: PieceType): boolean {
+  console.log("Moving a black pawn");
+  // TODO: What if we're moving two squares but there's a piece in the way? Need access to board array to check this.
+
+  // Can only capture diagonally.
+  if (capturedPiece !== PieceType.None) {
+    return endRow === startRow + 1 && (Math.abs(startCol - endCol) === 1);
+  }
+  
+  // Can move one or two squares on first move. Otherwise only one square.
+  if (startRow === 1) {
+    return (endRow === 2 || endRow === 3) && startCol === endCol;
+  }
+  return endRow === startRow + 1 && startCol === endCol;
+}
+
+function isKnightMoveValid(startRow: number, startCol: number, endRow: number, endCol: number): boolean {
+  console.log("Moving a knight");
+
+  return (Math.abs(startRow - endRow) === 1 && Math.abs(startCol - endCol) === 2)
+  || (Math.abs(startRow - endRow) === 2 && Math.abs(startCol - endCol) === 1);
+}

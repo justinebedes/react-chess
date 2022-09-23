@@ -18,7 +18,6 @@ body {
   }
   
   .light-square, .dark-square {
-    
     border: 1px solid #999;
     float: left;
     font-size: 24px;
@@ -57,3 +56,8 @@ body {
     margin-left: 20px;
   }
   
+  .move-list {
+    float: left;
+    width: 25%;
+    padding: 30px;
+  }
