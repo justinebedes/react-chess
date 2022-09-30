@@ -34,7 +34,11 @@ function Piece(props: PieceProps) {
         collect: (monitor) => ({
           isDragging: monitor.isDragging(),
         })
-      }))
+      }), 
+      // Not sure why this dependency array is required (particularly because it contains just props!).
+      // But without it, after e.g. a blank knight captures a white pawn, the item properties above
+      // still reflect the white pawn, not the black knight.
+      [props.row, props.col, props.pieceType]);
     
     switch (props.pieceType)
     {

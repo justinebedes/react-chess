@@ -51,6 +51,7 @@ function Square(props: SquareProps) {
         
         // Item that we're dragging must match the current turn.
         if (item.colour !== props.currentTurn) {
+          console.log("Dragging a piece that's the wrong colour");
           return false;
         }
 
@@ -75,7 +76,7 @@ function Square(props: SquareProps) {
 
         return true;
       }
-    }), [test, props.currentTurn]);
+    }), [test, props.currentTurn, props.piece]);
   
     if (props.piece === undefined || props.piece.valueOf() === PieceType.None) {
       return (
