@@ -10,9 +10,9 @@ export interface MoveListProps {
 }
 
 function MoveList(props: MoveListProps) {
-    const moves = props.moves.map(move => {
+    const moves = props.moves.map((move, index) => {
         return (
-            <li>
+            <li key={index}>
                 {move.whiteMove + " " + move.blackMove}
             </li>
         );

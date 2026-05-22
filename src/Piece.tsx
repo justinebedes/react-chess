@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Colour, PieceType } from './Constants';
 import { useDrag } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
 
 import { ReactComponent as WhitePawn } from './Images/WhitePawn.svg';
 import { ReactComponent as WhiteKnight } from './Images/WhiteKnight.svg';
@@ -39,7 +40,11 @@ function Piece(props: PieceProps) {
       // But without it, after e.g. a blank knight captures a white pawn, the item properties above
       // still reflect the white pawn, not the black knight.
       [props.row, props.col, props.pieceType]);
-    
+
+    useEffect(() => {
+      dragPreview(getEmptyImage(), { captureDraggingState: true });
+    }, [dragPreview]);
+
     switch (props.pieceType)
     {
         case PieceType.WhitePawn:

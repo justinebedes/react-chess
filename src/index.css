@@ -1,3 +1,7 @@
+:root {
+  --square-size: 68px;
+}
+
 body {
     font: 14px "Century Gothic", Futura, sans-serif;
     margin: 20px;
@@ -19,24 +23,97 @@ body {
   
   .light-square, .dark-square {
     border: 1px solid #999;
+    box-sizing: border-box;
     float: left;
     font-size: 24px;
     font-weight: bold;
-    line-height: 68px;
-    height: 68px;
+    line-height: var(--square-size);
+    height: var(--square-size);
     margin-right: -1px;
     margin-top: -1px;
     padding: 0;
+    position: relative;
     text-align: center;
-    width: 68px;
+    touch-action: none;
+    width: var(--square-size);
+  }
+
+  .light-square > div,
+  .dark-square > div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .light-square svg,
+  .dark-square svg {
+    width: 80%;
+    height: 80%;
   }
 
   .light-square {
-    background: rgb(232, 235, 239);
+    background: #EEEED2;
   }
 
   .dark-square {
-    background: rgb(125, 135, 150);
+    background: #769656;
+  }
+
+  .coord-rank {
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .coord-file {
+    position: absolute;
+    bottom: 2px;
+    right: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .light-square .coord-rank,
+  .light-square .coord-file {
+    color: #769656;
+  }
+
+  .dark-square .coord-rank,
+  .dark-square .coord-file {
+    color: #EEEED2;
+  }
+
+  .legal-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32%;
+    height: 32%;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .legal-capture::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(transparent 58%, rgba(0, 0, 0, 0.2) 58%);
+    pointer-events: none;
+    z-index: 10;
   }
   
   .square:focus {
@@ -50,6 +127,7 @@ body {
   .game {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
   }
   
   .game-info {
@@ -60,4 +138,90 @@ body {
     float: left;
     width: 25%;
     padding: 30px;
+  }
+
+  .game-board {
+    position: relative;
+  }
+
+  .promotion-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+  }
+
+  .promotion-picker {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    text-align: center;
+  }
+
+  .promotion-title {
+    margin: 0 0 12px;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .promotion-options {
+    display: flex;
+    gap: 8px;
+  }
+
+  .promotion-option {
+    width: 68px;
+    height: 68px;
+    border: 2px solid #999;
+    border-radius: 6px;
+    background: #EEEED2;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .promotion-option:hover {
+    border-color: #769656;
+    background: #d4e8c0;
+  }
+
+  .promotion-option svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (max-width: 600px) {
+    :root {
+      --square-size: calc((100vw - 16px) / 8);
+    }
+
+    body {
+      margin: 8px;
+    }
+
+    .game {
+      flex-direction: column;
+    }
+
+    .game-board {
+      width: 100%;
+    }
+
+    .move-list {
+      width: 100%;
+      padding: 16px 0;
+    }
+
+    .game-info {
+      margin-left: 0;
+    }
   }

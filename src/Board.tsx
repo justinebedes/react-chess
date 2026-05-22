@@ -1,18 +1,37 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useDragLayer } from 'react-dnd';
 import { BoardSize, PieceType, Colour } from './Constants';
 import Square from './Square';
+import { CastlingRights, EnPassantTarget, getLegalMoves } from './ChessLogic';
 
 export interface BoardProps {
   currentTurn: Colour,
-  board: number[][],
+  board: PieceType[][],
+  statusMessage: string,
+  gameOver: boolean,
+  castlingRights: CastlingRights,
+  enPassantTarget: EnPassantTarget | null,
   onMove: (startRow: number, startCol: number, endRow: number, endCol: number, piece: PieceType) => void;
 }
 
 function Board(props: BoardProps) { 
+    const { dragItem } = useDragLayer(monitor => ({
+      dragItem: monitor.isDragging() ? monitor.getItem() : null,
+    }));
+
+    const legalTargetSet = useMemo<Set<string>>(() => {
+      if (!dragItem) return new Set();
+      const moves = getLegalMoves(props.board, dragItem.startRow, dragItem.startCol, props.castlingRights, props.enPassantTarget);
+      return new Set(moves.map(m => `${m.row},${m.col}`));
+    }, [dragItem, props.board, props.castlingRights, props.enPassantTarget]);
+
     const renderSquare = (row: number, col: number, colour: Colour, piece: PieceType, turn: Colour) => {
-      console.log("Current turn in renderSquare: " + turn)
       return <Square key={row + "," + col} row={row} col={col} colour={colour} piece={piece} 
-                     currentTurn={turn} onMove={props.onMove} />;
+                     currentTurn={turn} board={props.board} gameOver={props.gameOver}
+                     castlingRights={props.castlingRights} enPassantTarget={props.enPassantTarget}
+                     isLegalTarget={legalTargetSet.has(`${row},${col}`)}
+                     showRank={col === 0} showFile={row === 7}
+                     onMove={props.onMove} />;
     }
 
     const renderRow = (row: number) => {
@@ -36,9 +55,6 @@ function Board(props: BoardProps) {
         );
     }
   
-    console.log("Getting currentTurn: " + props.currentTurn);
-    const status = 'Next player: ' + props.currentTurn;
-
     let rows: React.ReactElement[] = [];
     for (var row = 0; row < BoardSize; row++) {
         rows.push(renderRow(row))
@@ -46,7 +62,7 @@ function Board(props: BoardProps) {
 
     return (
         <div>
-          <div className="status">{status}</div>
+          <div className="status">{props.statusMessage}</div>
           {rows}
         </div>
     );
