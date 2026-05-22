@@ -24,7 +24,7 @@ export interface PieceProps {
 }
 
 function Piece(props: PieceProps) {
-    const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
+    const [, drag, dragPreview] = useDrag(() => ({
         type: 'PIECE',
         item: {
             startRow: props.row, 
