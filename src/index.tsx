@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { DndProvider } from 'react-dnd';
 import { MultiBackend } from 'react-dnd-multi-backend';
@@ -10,6 +10,7 @@ import CustomDragLayer from './CustomDragLayer';
 import PromotionPicker from './PromotionPicker';
 import { BoardSize, PieceType, Colour } from './Constants';
 import { isInCheck, isCheckmate, isStalemate, CastlingRights, FULL_CASTLING_RIGHTS, EnPassantTarget } from './ChessLogic';
+import { getBestMove } from './AlphaBeta';
 
 type GameStatus = 'playing' | 'check' | 'checkmate' | 'stalemate';
 
@@ -50,6 +51,7 @@ function Game() {
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('playing');
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
+  const [isAIThinking, setIsAIThinking] = useState(false);
 
   function computeStatusAfterMove(newBoard: PieceType[][], nextColour: Colour, newRights: CastlingRights, newEpTarget: EnPassantTarget | null): { status: GameStatus; suffix: string } {
     if (isCheckmate(newBoard, nextColour, newRights, newEpTarget)) return { status: 'checkmate', suffix: '#' };
@@ -179,6 +181,30 @@ function Game() {
     setCurrentTurn(nextColour);
   }
 
+  // Trigger AI move whenever it becomes Black’s turn.
+  // useEffect runs after React commits the render, so board/castlingRights/enPassantTarget
+  // are always the fresh post-White-move values — no stale closure.
+  useEffect(() => {
+    if (currentTurn !== Colour.Black) return;
+    if (gameStatus === 'checkmate' || gameStatus === 'stalemate') return;
+
+    setIsAIThinking(true);
+    getBestMove(board, castlingRights, enPassantTarget).then(aiMove => {
+      const aiPiece = board[aiMove.fromRow][aiMove.fromCol];
+      handleMove(aiMove.fromRow, aiMove.fromCol, aiMove.toRow, aiMove.toCol, aiPiece);
+      setIsAIThinking(false);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTurn]);
+
+  // Auto-promote Black pawns (AI always promotes to Queen).
+  useEffect(() => {
+    if (pendingPromotion && pendingPromotion.turn === Colour.Black) {
+      handlePromotion(PieceType.BlackQueen);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingPromotion]);
+
   return (
       <div className="game">
         <div className="game-board">
@@ -187,7 +213,7 @@ function Game() {
             <Board
               currentTurn={currentTurn}
               board={board}
-              gameOver={gameStatus === 'checkmate' || gameStatus === 'stalemate'}
+              gameOver={gameStatus === 'checkmate' || gameStatus === 'stalemate' || isAIThinking}
               statusMessage={getStatusMessage(currentTurn, gameStatus)}
               castlingRights={castlingRights}
               enPassantTarget={enPassantTarget}
